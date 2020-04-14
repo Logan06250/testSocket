@@ -7,9 +7,9 @@ var position = {
     y: 200
 };
 
-Http.listen(3000, () => {
-    console.log("Listening at :3000...");
-});
+Http.listen((process.env.PORT || 5000), function(){
+    console.log('listening on *:5000');
+  });
 
 Socketio.on("connection", socket => {
     console.log("New connection" + socket)
