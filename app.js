@@ -1,19 +1,30 @@
-const Express = require("express")();
+/*const Express = require("express")();
 const Http = require("http").Server(Express);
-const Socketio = require("socket.io")(Http);
+const socketio = require("socket.io")(Http);*/
+
+'use strict';
+
+const express = require('express');
+const socketIO = require('socket.io');
+
+const PORT = process.env.PORT || 3000;
+const INDEX = '/index.html';
+
+const server = express()
+  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+  .listen(PORT, () => console.log(`Listening on ${PORT}`));
+
+const io = socketIO(server);
+
 
 var position = {
     x: 200,
     y: 200
 };
 
-Http.listen((process.env.PORT || 5000), function(){
-    console.log('listening on *:' + process.env.PORT);
-  });
-
-Socketio.on("connection", socket => {
-    console.log("New connection" + socket)
-    socket.emit("position", position);
+io.on('connection', (socket) => {
+  console.log('Client connected');
+  socket.emit("position", position);
     socket.on("move", data => {
         switch(data) {
             case "left":
@@ -34,4 +45,7 @@ Socketio.on("connection", socket => {
                 break;
         }
     });
+  socket.on('disconnect', () => console.log('Client disconnected'));
 });
+
+setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
