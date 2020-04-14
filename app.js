@@ -25,27 +25,27 @@ var position = {
 io.on('connection', (socket) => {
   console.log('Client connected');
   socket.emit("position", position);
-    socket.on("move", data => {
-      console.log(data)
-        switch(data) {
-            case "left":
-                position.x -= 5;
-                Socketio.emit("position", position);
-                break;
-            case "right":
-                position.x += 5;
-                Socketio.emit("position", position);
-                break;
-            case "up":
-                position.y -= 5;
-                Socketio.emit("position", position);
-                break;
-            case "down":
-                position.y += 5;
-                Socketio.emit("position", position);
-                break;
+  socket.on("move", data => {
+    console.log(data)
+      switch(data) {
+          case "left":
+              position.x -= 5;
+              socket.emit("position", position);
+              break;
+          case "right":
+              position.x += 5;
+              socket.emit("position", position);
+              break;
+          case "up":
+              position.y -= 5;
+              socket.emit("position", position);
+              break;
+          case "down":
+              position.y += 5;
+              socket.emit("position", position);
+              break;
         }
-    });
+  });
   socket.on('disconnect', () => console.log('Client disconnected'));
 });
 
