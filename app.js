@@ -14,19 +14,52 @@ const io = socketIO(server);
 
 var users = [];
 
-io.on('connection', (socket) => {
+var positions = []
 
+io.on('connection', (socket) => {
   socket.on("name", name => {
     socket.nickname = name;
+
+    positions.push( {
+      name: socket.nickname,
+      x: 200,
+      y: 200
+    })
+
     users.push(socket.nickname)
     socket.emit("users", users)
     console.log('Client connected : ' + socket.nickname);
   });
+
+  socket.emit("position", positions)
+  socket.on('move', (data) => {
+
+    const found = positions.find(el => el.name == socket.nickname);
+
+    const index = positions.indexOf(found)
+    switch(data) {
+      case "left":
+          positions[index].x -= 5;
+          io.emit("position", positions);
+          break;
+      case "right":
+          positions[index].x += 5;
+          io.emit("position", positions);
+          break;
+      case "up":
+          positions[index].y -= 5;
+          io.emit("position", positions);
+          break;
+      case "down":
+          positions[index].y += 5;
+          io.emit("position", positions);
+          break;
+    }
+  });
+
   socket.on('disconnect', () => {
     users.splice(users.indexOf(socket.nickname), 1)
     socket.emit("users", users)
     console.log('Client disconnected : ' + socket.nickname);
   });
 });
-
-setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
