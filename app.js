@@ -26,6 +26,7 @@ io.on('connection', (socket) => {
   console.log('Client connected');
   socket.emit("position", position);
     socket.on("move", data => {
+      console.log(data)
         switch(data) {
             case "left":
                 position.x -= 5;
