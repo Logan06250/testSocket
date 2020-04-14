@@ -7,11 +7,12 @@ var position = {
     y: 200
 };
 
-Http.listen(3000, () => {
-    console.log("Listening at :3000...");
+Http.listen(15900, () => {
+    console.log("Listening at :15900...");
 });
 
 Socketio.on("connection", socket => {
+    console.log("New connection" + socket)
     socket.emit("position", position);
     socket.on("move", data => {
         switch(data) {
