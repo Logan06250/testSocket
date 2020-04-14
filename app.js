@@ -1,7 +1,3 @@
-/*const Express = require("express")();
-const Http = require("http").Server(Express);
-const socketio = require("socket.io")(Http);*/
-
 'use strict';
 
 const express = require('express');
@@ -16,38 +12,21 @@ const server = express()
 
 const io = socketIO(server);
 
-
-var position = {
-    x: 200,
-    y: 200
-};
+var users = [];
 
 io.on('connection', (socket) => {
-  console.log('Client connected');
-  console.log(socket)
-  socket.emit("position", position);
-  socket.on("name", data => {
-    console.log(data)
-      switch(data) {
-          case "left":
-              position.x -= 5;
-              socket.emit("position", position);
-              break;
-          case "right":
-              position.x += 5;
-              socket.emit("position", position);
-              break;
-          case "up":
-              position.y -= 5;
-              socket.emit("position", position);
-              break;
-          case "down":
-              position.y += 5;
-              socket.emit("position", position);
-              break;
-        }
+
+  socket.on("name", name => {
+    socket.nickname = name;
+    users.push(socket.nickname)
+    socket.emit("users", users)
+    console.log('Client connected : ' + socket.nickname);
   });
-  socket.on('disconnect', () => console.log('Client disconnected'));
+  socket.on('disconnect', () => {
+    users.splice(users.indexOf(socket.nickname), 1)
+    socket.emit("users", users)
+    console.log('Client disconnected : ' + socket.nickname);
+  });
 });
 
 setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
