@@ -27,16 +27,17 @@ io.on('connection', (socket) => {
     })
 
     users.push(socket.nickname)
-    socket.emit("users", users)
+    io.emit("users", users)
     console.log('Client connected : ' + socket.nickname);
   });
 
   socket.emit("position", positions)
   socket.on('move', (data) => {
 
-    const found = positions.find(el => el.name == socket.nickname);
+    const index = positions.indexOf(positions.find(el => el.name == socket.nickname))
 
-    const index = positions.indexOf(found)
+    console.log(positions)
+
     switch(data) {
       case "left":
           positions[index].x -= 5;
@@ -59,7 +60,9 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     users.splice(users.indexOf(socket.nickname), 1)
-    socket.emit("users", users)
+    io.emit("users", users)
+    positions.splice(positions.indexOf(positions.find(el => el.name == socket.nickname)))
+    io.emit("position", positions)
     console.log('Client disconnected : ' + socket.nickname);
   });
 });
